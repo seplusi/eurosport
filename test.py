@@ -1,12 +1,16 @@
 import unittest
-import time
+import copy
 from selenium import webdriver
+from selenium.webdriver.support.expected_conditions import staleness_of
+from selenium.common.exceptions import StaleElementReferenceException
 
+pop_up_done = False
 
 class PythonOrgSearch(unittest.TestCase):
     """A sample test class to show how page object works"""
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         options = webdriver.ChromeOptions()
         options.add_argument("--start-maximized")
         options.add_experimental_option("prefs", {"profile.block_third_party_cookies": True})
@@ -14,31 +18,75 @@ class PythonOrgSearch(unittest.TestCase):
         # driver = webdriver.Chrome(chrome_options=options)
 
         # create a new Firefox session
-        self.driver = webdriver.Chrome(executable_path="/home/luis/Programs/chromedriver/chromedriver", options=options)
-        self.driver.implicitly_wait(30)
+        cls.driver = webdriver.Chrome(executable_path="/home/luis/Programs/chromedriver/chromedriver", options=options)
+        cls.driver.implicitly_wait(60)
+        cls.driver.get("https://www.eurosport.co.uk")
+        element = cls.driver.find_element_by_xpath('//button[text()=" I accept "]')
 
-        # Navigate to the application home page and get rid of the popup
+        cls._link_has_gone_stale(cls, element)
+
+        print('%s %s' % (element.tag_name, element.text))
+        element.click()
+
+    def setUp(self):
         self.driver.get("https://www.eurosport.co.uk")
-        elements = self.driver.find_elements_by_css_selector('div > button[class="qc-cmp-button"]')
-        self.assertTrue(len(elements) == 1, 'ERROR: %s' % str([x.text for x in elements]))
-        elements[0].click()
-        print('Hello World')
+
+    def _link_has_gone_stale(self, element):
+        try:
+            # poll the link with an arbitrary call
+            self.driver.implicitly_wait(1)
+            element.find_elements_by_id('doesnt-matter')
+            return False
+        except StaleElementReferenceException:
+            return True
+        finally:
+            self.driver.implicitly_wait(60)
+
+    def _check_stale_and_click(self, element):
+        if self._link_has_gone_stale(element):
+            print('%s % is STALE' %(element.tag_name, element.text))
+        element.click()
 
     def test_motorsports_in_main_menu(self):
-        self.driver.find_element_by_css_selector('li[class^="category"] > a[href^="/allmotor"]').click()
+        motorsport = self.driver.find_element_by_css_selector('li[class^="category"] > a[href^="/allmotorsports"]')
+        self._check_stale_and_click(motorsport)
         self.driver.find_element_by_css_selector('li[class^="bread"] > a[href^="/allmotor"]')
         self.driver.find_element_by_css_selector('div > div[class ="livebox-caption"]')
         self.driver.find_element_by_css_selector('div[id^="navtab-storylist-desk"] a[href="#featured"] > span[class="navtab-label"]')
 
     def test_motorsports_in_dropdown_menu(self):
         self.driver.find_element_by_css_selector('button[class="hamburger"] > span').click()
-        self.driver.find_element_by_css_selector('div[class="overflower"]> ul[class="popular-nav"]  a[href^="/allmotor"]').click()
+        motorsport = self.driver.find_element_by_css_selector('div[class="overflower"]> ul[class="popular-nav"]  a[href^="/allmotorsports"]')
+        self._check_stale_and_click(motorsport)
+        self.driver.find_element_by_css_selector('li[class="breadcrumb-item fade-in two"] > a[href="/allmotorsports/"]')
         self.driver.find_element_by_css_selector('div > div[class ="livebox-caption"]')
+        self.driver.find_element_by_css_selector('div[id^="navtab-storylist-desk"] a[href="#featured"] > span[class="navtab-label"]')
+
+    def test_motorsports_in_dropdown_menu2(self):
+        self.driver.find_element_by_css_selector('button[class="hamburger"] > span').click()
+        motorsport = self.driver.find_element_by_css_selector('ul[class="allsports-desktop"] > li > a[href="/allmotorsports/"]')
+        self._check_stale_and_click(motorsport)
+        self.driver.find_element_by_css_selector('li[class="breadcrumb-item fade-in two"] > a[href="/allmotorsports/"]')
+        self.driver.find_element_by_css_selector('div > div[class ="livebox-caption"]')
+        self.driver.find_element_by_css_selector('div[id^="navtab-storylist-desk"] a[href="#featured"] > span[class="navtab-label"]')
+
+    def test_find_miguel_oliveira(self):
+        self.driver.find_element_by_css_selector('button[class="hamburger"] > span').click()
+        motorsport = self.driver.find_element_by_css_selector('ul[class="allsports-desktop"] > li > a[href="/allmotorsports/"]')
+        self._check_stale_and_click(motorsport)
+        motogp = self.driver.find_element_by_css_selector('li[class="categorylist__item"] > a[href="/moto/"]')
+        self._check_stale_and_click(motogp)
+        standings = self.driver.find_element_by_css_selector('ul[class="categorylist"] > li > a[href^="/moto/world-championship/standing"]')
+        self._check_stale_and_click(standings)
         self.driver.find_element_by_css_selector('div[id^="navtab-storylist-desk"] a[href="#featured"] > span[class="navtab-label"]')
 
 
     def tearDown(self):
-        self.driver.close()
+        pass
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.driver.close()
 
 if __name__ == "__main__":
     unittest.main()
