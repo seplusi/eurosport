@@ -1,5 +1,5 @@
 import unittest
-import copy
+import time
 from selenium import webdriver
 from selenium.webdriver.support.expected_conditions import staleness_of
 from selenium.common.exceptions import StaleElementReferenceException
@@ -13,7 +13,8 @@ class PythonOrgSearch(unittest.TestCase):
     def setUpClass(cls):
         options = webdriver.ChromeOptions()
         options.add_argument("--start-maximized")
-        options.add_experimental_option("prefs", {"profile.block_third_party_cookies": True})
+        options.add_experimental_option('w3c', False)
+#        options.add_experimental_option("prefs", {"profile.block_third_party_cookies": True})
 
         # driver = webdriver.Chrome(chrome_options=options)
 
@@ -23,7 +24,8 @@ class PythonOrgSearch(unittest.TestCase):
         cls.driver.get("https://www.eurosport.co.uk")
         element = cls.driver.find_element_by_xpath('//button[text()=" I accept "]')
 
-        cls._link_has_gone_stale(cls, element)
+        if cls._link_has_gone_stale(cls, element):
+            print('Entry page has gobe stale')
 
         print('%s %s' % (element.tag_name, element.text))
         element.click()
@@ -78,15 +80,22 @@ class PythonOrgSearch(unittest.TestCase):
         self._check_stale_and_click(motogp)
         standings = self.driver.find_element_by_css_selector('ul[class="categorylist"] > li > a[href^="/moto/world-championship/standing"]')
         self._check_stale_and_click(standings)
-        self.driver.find_element_by_css_selector('div[id^="navtab-storylist-desk"] a[href="#featured"] > span[class="navtab-label"]')
-
+        elements = self.driver.find_elements_by_css_selector('div[id^="standings-tabs"] span[class="navtab-label"]')
+        for element in elements:
+            if element.text == 'MotoGP':
+                break
+        self._check_stale_and_click(element)
+        name = self.driver.find_element_by_css_selector('a[href^="/moto/miguel"]')
+        self._check_stale_and_click(name)
+        self.driver.find_elements_by_css_selector('h1[class="person-head__person-name"]')
 
     def tearDown(self):
         pass
 
     @classmethod
     def tearDownClass(cls):
-        cls.driver.close()
+        cls.driver.quit()
 
 if __name__ == "__main__":
+#    unittest.TestLoader.sortTestMethodsUsing = lambda _, x, y: cmp(y, x)
     unittest.main()
