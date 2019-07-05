@@ -1,10 +1,7 @@
 import unittest
-import time
 from selenium import webdriver
-from selenium.webdriver.support.expected_conditions import staleness_of
-from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
 
-pop_up_done = False
 
 class PythonOrgSearch(unittest.TestCase):
     """A sample test class to show how page object works"""
@@ -14,21 +11,25 @@ class PythonOrgSearch(unittest.TestCase):
         options = webdriver.ChromeOptions()
         options.add_argument("--start-maximized")
         options.add_experimental_option('w3c', False)
-#        options.add_experimental_option("prefs", {"profile.block_third_party_cookies": True})
+        options.add_experimental_option("prefs", {"profile.block_third_party_cookies": True})
 
         # driver = webdriver.Chrome(chrome_options=options)
 
         # create a new Firefox session
         cls.driver = webdriver.Chrome(executable_path="/home/luis/Programs/chromedriver/chromedriver", options=options)
-        cls.driver.implicitly_wait(60)
+        cls.driver.implicitly_wait(5)
         cls.driver.get("https://www.eurosport.co.uk")
-        element = cls.driver.find_element_by_xpath('//button[text()=" I accept "]')
+        try:
+            element = cls.driver.find_element_by_xpath('//button[text()=" I accept "]')
+            if cls._link_has_gone_stale(cls, element):
+                print('Entry page has gobe stale')
 
-        if cls._link_has_gone_stale(cls, element):
-            print('Entry page has gobe stale')
-
-        print('%s %s' % (element.tag_name, element.text))
-        element.click()
+            print('%s %s' % (element.tag_name, element.text))
+            element.click()
+        except NoSuchElementException:
+            print('No popup. No need to accetp.')
+        finally:
+            cls.driver.implicitly_wait(60)
 
     def setUp(self):
         self.driver.get("https://www.eurosport.co.uk")
