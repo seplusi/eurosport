@@ -1,4 +1,5 @@
 import unittest
+import time
 from selenium import webdriver
 from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
 
@@ -32,6 +33,7 @@ class PythonOrgSearch(unittest.TestCase):
             cls.driver.implicitly_wait(60)
 
     def setUp(self):
+        self._started_at = time.time()
         self.driver.get("https://www.eurosport.co.uk")
 
     def _link_has_gone_stale(self, element):
@@ -91,12 +93,12 @@ class PythonOrgSearch(unittest.TestCase):
         self.driver.find_elements_by_css_selector('h1[class="person-head__person-name"]')
 
     def tearDown(self):
-        pass
+        elapsed = time.time() - self._started_at
+        print('{} ({}s)'.format(self.id(), round(elapsed, 2)))
 
     @classmethod
     def tearDownClass(cls):
         cls.driver.quit()
 
 if __name__ == "__main__":
-#    unittest.TestLoader.sortTestMethodsUsing = lambda _, x, y: cmp(y, x)
     unittest.main()
