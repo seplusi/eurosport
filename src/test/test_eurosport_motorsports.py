@@ -5,6 +5,7 @@ from selenium.common.exceptions import StaleElementReferenceException, NoSuchEle
 from src.main.common.driver import Driver
 from src.main.pageobject.eurosportHome import HomeScreen
 from src.main.pageobject.eurosportMotorsports import MotorsportScreen
+from src.main.pageobject.eurosportMotorcycling import MotorcyclingScreen
 
 
 class eurosportMotorsport(unittest.TestCase):
@@ -12,35 +13,41 @@ class eurosportMotorsport(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        pass
+        cls.driver = Driver()
 
     def setUp(self):
-        self.driver = Driver()
         self.driver.navigate("https://www.eurosport.co.uk")
+        self.homepage = HomeScreen(self.driver)
 
+#    @unittest.skip('')
     def test_motorsports_in_main_menu(self):
-        HomeScreen(self.driver).click_motorsports()
+        self.homepage.click_motorsports()
         MotorsportScreen(self.driver)
-        pass
 
-    @unittest.skip('')
+#    @unittest.skip('')
     def test_motorsports_in_dropdown_menu(self):
-        pass
+        self.homepage.click_motorsports_in_dropdown_menu()
+        MotorsportScreen(self.driver)
 
-    @unittest.skip('')
+#    @unittest.skip('')
     def test_motorsports_in_dropdown_menu2(self):
-        pass
+        self.homepage.click_motorsports_in_dropdown_menu_right()
+        MotorsportScreen(self.driver)
 
-    @unittest.skip('')
+#    @unittest.skip('')
     def test_find_miguel_oliveira(self):
-        pass
+        self.homepage.click_motorsports_in_dropdown_menu()
+        MotorsportScreen(self.driver).click_motogp()
+        MotorcyclingScreen(self.driver).click_standings()
+        MotorcyclingScreen(self.driver).click_motogp_standings()
+        MotorcyclingScreen(self.driver).click_miguel()
 
     def tearDown(self):
-        self.driver.instance.quit()
+        pass
 
     @classmethod
     def tearDownClass(cls):
-        pass
+        cls.driver.instance.quit()
 
 if __name__ == "__main__":
     unittest.main()
