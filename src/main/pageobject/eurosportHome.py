@@ -4,25 +4,28 @@ import time
 
 class HomeScreen:
 
-    def __init__(self, driver):
-        self.driver = driver
+    def __init__(self, driver, config):
+        self.driver = driver.instance
+        self.config = config
+        self.section = driver.section
         try:
-            self.driver.instance.implicitly_wait(10)
-            self.driver.instance.find_element_by_css_selector('div[class="abtasty-modal__close abtasty-modal__close--inside"]').click()
+            self.driver.implicitly_wait(10)
+            self.driver.find_element_by_css_selector(self.config.get(self.section, 'popup_close_cross')).click()
         except NoSuchElementException:
             print('No popup. No need to accetp.')
         finally:
-            self.driver.instance.implicitly_wait(60)
+            self.driver.implicitly_wait(60)
 
-        self.motorsports_link = self.driver.instance.find_element_by_css_selector('li[class^="category"] > a[href^="/allmotorsports"]')
+        self.motorsports_link = self.driver.find_element_by_css_selector(self.config.get(self.section, 'motorsports_link'))
+        self.motorsports_link = self.driver.find_element_by_css_selector(self.config.get(self.section, 'motorsports_link'))
 
     def click_motorsports(self):
         self.motorsports_link.click()
 
     def click_motorsports_in_dropdown_menu(self):
-        self.driver.instance.find_element_by_css_selector('button[class="hamburger"] > span').click()
+        self.driver.find_element_by_css_selector(self.config.get(self.section, 'dropdown_button')).click()
         for _ in range(10):
-            var = self.driver.instance.find_element_by_css_selector('div[class="overflower"]> ul[class="popular-nav"] > li > a[href="/allmotorsports/"]')
+            var = self.driver.find_element_by_css_selector(self.config.get(self.section, 'popular_sports_motosports_link'))
             if var.text == 'Motorsports':
                 var.click()
                 break
@@ -33,9 +36,9 @@ class HomeScreen:
             self.assertTrue(False)
 
     def click_motorsports_in_dropdown_menu_right(self):
-        self.driver.instance.find_element_by_css_selector('button[class="hamburger"] > span').click()
+        self.driver.find_element_by_css_selector(self.config.get(self.section, 'dropdown_button')).click()
         for _ in range(10):
-            var = self.driver.instance.find_element_by_css_selector('ul[class="allsports-desktop"] > li > a[href="/allmotorsports/"]')
+            var = self.driver.find_element_by_css_selector(self.config.get(self.section, 'all_sports_motorsport_link'))
             if var.text == 'Motorsports':
                 var.click()
                 break

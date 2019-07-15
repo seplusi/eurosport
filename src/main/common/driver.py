@@ -3,7 +3,7 @@ from selenium import webdriver
 
 class Driver:
 
-    def __init__(self):
+    def __init__(self, section):
         options = webdriver.ChromeOptions()
         options.add_argument("--start-maximized")
         options.add_argument("--disable-popup-blocking");
@@ -12,6 +12,7 @@ class Driver:
 
         self.instance = webdriver.Chrome(executable_path="/home/luis/Programs/chromedriver/chromedriver", options=options)
         self.instance.implicitly_wait(30)
+        self.section = section
 
     def navigate(self, url):
         if isinstance(url, str):

@@ -1,21 +1,24 @@
 class MotorcyclingScreen:
 
-    def __init__(self, driver):
-        self.driver = driver
-        self.standings_link = self.driver.instance.find_element_by_css_selector('ul[class="categorylist"] > li > a[href^="/moto/world-championship/standing"]')
+    def __init__(self, driver, config):
+        self.driver = driver.instance
+        self.config = config
+        self.section = driver.section
+
+        self.standings_link = self.driver.find_element_by_css_selector(self.config.get(self.section, 'motogp_standings_link'))
 
     def click_standings(self):
         self.standings_link.click()
 
     def click_motogp_standings(self):
-        elements = self.driver.instance.find_elements_by_css_selector('div[id^="standings-tabs"] span[class="navtab-label"]')
+        elements = self.driver.find_elements_by_css_selector(self.config.get(self.section, 'motogp_cat_link'))
         for element in elements:
             if element.text == 'MotoGP':
                 break
         element.click()
 
     def click_miguel(self):
-        self.driver.instance.find_element_by_css_selector('a[href^="/moto/miguel"]').click()
-        self.driver.instance.find_element_by_css_selector('h1[class="person-head__person-name"]')
+        self.driver.find_element_by_css_selector(self.config.get(self.section, 'miguel_gc_position_link')).click()
+        self.driver.find_element_by_css_selector(self.config.get(self.section, 'miguel_profile'))
 
 
