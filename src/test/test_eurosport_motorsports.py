@@ -42,11 +42,18 @@ class eurosportMotorsport(unittest.TestCase):
         MotorcyclingScreen(self.driver, self.config_obj.config).click_miguel()
 
     def tearDown(self):
+        self.take_snapshot_if_failure()
         pass
 
     @classmethod
     def tearDownClass(cls):
         cls.driver.instance.quit()
+
+    def take_snapshot_if_failure(self):
+        for method, error in self._outcome.errors:
+            if error:
+                self.driver.instance.save_screenshot('/var/tmp/screenshot%s.png' % self.id())
+
 
 if __name__ == "__main__":
     unittest.main()
