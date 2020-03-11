@@ -1,5 +1,6 @@
 import unittest
 from src.main.common.driver import Driver
+from src.main.common import utils
 from src.main.pageobject.eurosportHome import HomeScreen
 from src.main.pageobject.eurosportMotorsports import MotorsportScreen
 from src.main.pageobject.eurosportMotorcycling import MotorcyclingScreen
@@ -13,6 +14,8 @@ class eurosportMotorsport(unittest.TestCase):
     def setUpClass(cls):
         cls.driver = Driver('eurosport_selectors')
         cls.config_obj = Config()
+        cls.driver.navigate(cls.config_obj.config.get('URLs', 'eurosport_base_url'))
+        utils.accept_privacy(cls.driver, cls.config_obj.config)
 
     def setUp(self):
         self.driver.navigate(self.config_obj.config.get('URLs', 'eurosport_base_url'))
@@ -36,10 +39,14 @@ class eurosportMotorsport(unittest.TestCase):
 #    @unittest.skip('')
     def test_find_miguel_oliveira(self):
         self.homepage.click_motorsports_in_dropdown_menu()
+
         MotorsportScreen(self.driver, self.config_obj.config).click_motogp()
-        MotorcyclingScreen(self.driver, self.config_obj.config).click_standings()
-        MotorcyclingScreen(self.driver, self.config_obj.config).click_motogp_standings()
-        MotorcyclingScreen(self.driver, self.config_obj.config).click_miguel()
+
+        motorcycling_screen = MotorcyclingScreen(self.driver, self.config_obj.config)
+        motorcycling_screen.click_standings()
+        motorcycling_screen.click_motogp_standings()
+        motorcycling_screen.click_miguel()
+
 
     def tearDown(self):
         self.take_snapshot_if_failure()

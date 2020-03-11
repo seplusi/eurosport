@@ -10,8 +10,7 @@ class Driver:
         options.add_experimental_option('w3c', False)
         options.add_experimental_option("prefs", {"profile.block_third_party_cookies": True})
 
-        self.instance = webdriver.Chrome(executable_path="/home/luis/Programs/chromedriver/chromedriver", options=options)
-        self.instance.implicitly_wait(30)
+        self.instance = webdriver.Chrome(executable_path="/home/luis/Programs/chromedriver", options=options)
         self.section = section
 
     def navigate(self, url):

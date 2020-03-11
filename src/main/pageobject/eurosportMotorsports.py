@@ -1,14 +1,19 @@
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+
+
 class MotorsportScreen:
 
     def __init__(self, driver, config):
-        self.driver = driver
+        self.driver = driver.instance
         self.config = config
         self.section = driver.section
 
-        self.driver.instance.find_element_by_css_selector(self.config.get(self.section, 'motorsports_text_in_motorsport_page'))
-        self.driver.instance.find_element_by_css_selector(self.config.get(self.section, 'motorsport_all_scores'))
-        self.driver.instance.find_element_by_css_selector(self.config.get(self.section, 'motorsport_featured'))
-        self.motogp_link = self.driver.instance.find_element_by_css_selector(self.config.get(self.section, 'motogp_link'))
+        WebDriverWait(driver.instance, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR,
+                                                                             self.config.get(self.section,
+                                                                                             'motorsports_text_in_motorsport_page'))))
 
     def click_motogp(self):
-        self.motogp_link.click()
+        element = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, self.config.get(self.section, 'motogp_link'))))
+        element.click()
