@@ -4,6 +4,7 @@ from src.main.common import utils
 from src.main.pageobject.eurosportHome import HomeScreen
 from src.main.pageobject.eurosportMotorsports import MotorsportScreen
 from src.main.pageobject.eurosportMotorcycling import MotorcyclingScreen
+from src.main.pageobject.eurosportGolf import GolfScreen
 from src.main.configs.config import Config
 
 
@@ -46,6 +47,14 @@ class eurosportMotorsport(unittest.TestCase):
         motorcycling_screen.click_standings()
         motorcycling_screen.click_motogp_standings()
         motorcycling_screen.click_miguel()
+
+#    @unittest.skip('')
+    def test_insert_comment_article_golf(self):
+        self.homepage.click_golf()
+        golf_screen = GolfScreen(self.driver, self.config_obj.config)
+        article_name = golf_screen.click_first_article().split('\n')[0]
+        assert golf_screen.get_article_title() == article_name
+        assert golf_screen.get_article_publisher()
 
 
     def tearDown(self):

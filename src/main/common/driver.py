@@ -8,7 +8,7 @@ class Driver:
         options.add_argument("--start-maximized")
         options.add_argument("--disable-popup-blocking");
         options.add_experimental_option('w3c', False)
-        options.add_experimental_option("prefs", {"profile.block_third_party_cookies": True})
+        options.add_argument("--user-data-dir=/home/luis/Programs/google-chrome-profile-data/google-chrome")
 
         self.instance = webdriver.Chrome(executable_path="/home/luis/Programs/chromedriver", options=options, service_args=["--error", "--log-path=/var/tmp/selenium.log"])
         self.section = section

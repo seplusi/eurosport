@@ -5,5 +5,8 @@ from selenium.webdriver.common.by import By
 
 def accept_privacy(driver, config):
     selector = config.get(driver.section, 'accept_gdpr')
-    element = WebDriverWait(driver.instance, 10).until(EC.element_to_be_clickable((By.XPATH, selector)))
-    element.click()
+    try:
+        element = WebDriverWait(driver.instance, 10).until(EC.element_to_be_clickable((By.XPATH, selector)))
+        element.click()
+    except:
+        pass

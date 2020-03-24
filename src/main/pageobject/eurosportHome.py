@@ -1,6 +1,6 @@
 import time
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import StaleElementReferenceException, ElementClickInterceptedException
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
@@ -14,6 +14,7 @@ class HomeScreen:
         self.driver = driver.instance
         self.config = config
         self.section = driver.section
+        self.ignored_exceptions = (StaleElementReferenceException, ElementClickInterceptedException,)
         WebDriverWait(driver.instance, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR,
                                                                              self.config.get(self.section,
                                                                                              'eurosport_header'))))
@@ -22,53 +23,78 @@ class HomeScreen:
         element = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, self.config.get(self.section, 'motorsports_link'))))
         element.click()
 
-    def click_motorsports_in_dropdown_menu(self):
-        ignored_exceptions = (StaleElementReferenceException,)
-
+    def click_hamburger(self, exceptions_lst):
         my_element_id = self.config.get(self.section, 'dropdown_button')
-        my_element_id2 = self.config.get(self.section, 'popular_sports_motosports_link')
         for num in range (2):
             print('Trying clicking in dropdown_button in %s #%d' % (self.click_motorsports_in_dropdown_menu.__name__, num))
-            WebDriverWait(self.driver, 10, ignored_exceptions=ignored_exceptions).until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, my_element_id))).click()
+            element = WebDriverWait(self.driver, 10, ignored_exceptions=exceptions_lst).until(expected_conditions.element_to_be_clickable((By.CSS_SELECTOR, my_element_id)))
+            self.driver.execute_script("arguments[0].click();", element)
 
-     #       while True:
-     #           if self.driver.find_elements_by_css_selector(
-     #               'div.modalnav__rightcol-container.sports-list >div.list-container.tablet')[0].size['height'] != 0:
-     #               break
             try:
-                WebDriverWait(self.driver, 10, ignored_exceptions=()).until(expected_conditions.visibility_of_all_elements_located((By.CSS_SELECTOR, 'div.modalnav__rightcol-container.sports-list >div.list-container.tablet')))
+                WebDriverWait(self.driver, 10, ignored_exceptions=exceptions_lst).until(expected_conditions.visibility_of_all_elements_located((By.CSS_SELECTOR, 'div.modalnav__rightcol-container.sports-list >div.list-container.tablet')))
                 break
             except TimeoutException:
                 print('dropdown_button didn\'t work' )
 
+        WebDriverWait(self.driver, 10, ignored_exceptions=exceptions_lst).until(expected_conditions.visibility_of_element_located((By.ID, 'modal_navallsport')))
+
+    def click_motorsports_in_dropdown_menu(self):
+        my_element_id2 = self.config.get(self.section, 'popular_sports_motosports_link')
+
+        self.click_hamburger(self.ignored_exceptions)
+
         for num in range(2):
-            print('Trying clicking in motorsports link in %s #%d' % (self.click_motorsports_in_dropdown_menu.__name__, num))
-            WebDriverWait(self.driver, 10, ignored_exceptions=ignored_exceptions).\
-                until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, my_element_id2))).click()
+            print('Trying clicking in motorsports popular sports link in %s #%d' % (self.click_motorsports_in_dropdown_menu.__name__, num))
+            link = WebDriverWait(self.driver, 10, ignored_exceptions=self.ignored_exceptions).\
+                until(expected_conditions.element_to_be_clickable((By.CSS_SELECTOR, my_element_id2)))
+            self.driver.execute_script("arguments[0].click();", link)
 
             try:
-                WebDriverWait(self.driver, 10, ignored_exceptions=ignored_exceptions). \
+                WebDriverWait(self.driver, 10, ignored_exceptions=self.ignored_exceptions). \
+                    until(expected_conditions.invisibility_of_element_located((By.CSS_SELECTOR, my_element_id2)))
+                break
+            except TimeoutException:
+                print('motorsports link didn\'t work')
+        else:
+            raise Exception
+
+    def click_motorsports_in_dropdown_menu_right(self):
+        my_element_id2 = self.config.get(self.section, 'all_sports_motorsport_link')
+
+        self.click_hamburger(self.ignored_exceptions)
+
+        for num in range(2):
+            print('Trying clicking in motorsports all sports link in %s #%d' % (self.click_motorsports_in_dropdown_menu.__name__, num))
+            link = WebDriverWait(self.driver, 10, ignored_exceptions=self.ignored_exceptions).\
+                until(expected_conditions.element_to_be_clickable((By.CSS_SELECTOR, my_element_id2)))
+            self.driver.execute_script("arguments[0].click();", link)
+
+            try:
+                WebDriverWait(self.driver, 10, ignored_exceptions=self.ignored_exceptions). \
                     until(expected_conditions.invisibility_of_element_located((By.CSS_SELECTOR, my_element_id2)))
                 break
             except TimeoutException:
                 print('motorsports link didn\'t work')
 
-    def click_motorsports_in_dropdown_menu_right(self):
-        ignored_exceptions = (StaleElementReferenceException,)
-        my_element_id = self.config.get(self.section, 'dropdown_button')
-        my_element_id2 = self.config.get(self.section, 'all_sports_motorsport_link')
+        else:
+            raise Exception
+
+    def click_golf(self):
+        self.click_hamburger(self.ignored_exceptions)
+        my_element_id2 = self.config.get(self.section, 'popular_sports_golf_link')
 
         for num in range(2):
-            print('Trying clicking in dropdown_button in %s #%d' % (self.click_motorsports_in_dropdown_menu_right.__name__, num))
-            WebDriverWait(self.driver, 10, ignored_exceptions=ignored_exceptions).\
-                    until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, my_element_id))).click()
+            print('Trying clicking in golf link in %s #%d' % (self.click_motorsports_in_dropdown_menu.__name__, num))
+            link = WebDriverWait(self.driver, 10, ignored_exceptions=self.ignored_exceptions).\
+                until(expected_conditions.element_to_be_clickable((By.CSS_SELECTOR, my_element_id2)))
+            self.driver.execute_script("arguments[0].click();", link)
 
             try:
-                WebDriverWait(self.driver, 10, ignored_exceptions=ignored_exceptions).until(expected_conditions.visibility_of_all_elements_located((By.CSS_SELECTOR, 'div.modalnav__rightcol-container.sports-list >div.list-container.tablet')))
+                WebDriverWait(self.driver, 10, ignored_exceptions=self.ignored_exceptions). \
+                    until(expected_conditions.invisibility_of_element_located((By.CSS_SELECTOR, my_element_id2)))
                 break
             except TimeoutException:
-                print('dropdown_button didn\'t work' )
+                print('golf link didn\'t work')
 
-
-        WebDriverWait(self.driver, 10, ignored_exceptions=ignored_exceptions).\
-                until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, my_element_id2))).click()
+        else:
+            raise Exception
