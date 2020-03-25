@@ -15,5 +15,5 @@ class MotorsportScreen:
                                                                                              'motorsports_text_in_motorsport_page'))))
 
     def click_motogp(self):
-        element = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, self.config.get(self.section, 'motogp_link'))))
+        element = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, self.config.get(self.section, 'motogp_link'))))
         element.click()

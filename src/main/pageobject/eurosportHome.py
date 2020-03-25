@@ -36,7 +36,7 @@ class HomeScreen:
             except TimeoutException:
                 print('dropdown_button didn\'t work' )
 
-        WebDriverWait(self.driver, 10, ignored_exceptions=exceptions_lst).until(expected_conditions.visibility_of_element_located((By.ID, 'modal_navallsport')))
+        WebDriverWait(self.driver, 10, ignored_exceptions=self.ignored_exceptions).until(expected_conditions.visibility_of_element_located((By.ID, 'modal_navallsport')))
 
     def click_motorsports_in_dropdown_menu(self):
         my_element_id2 = self.config.get(self.section, 'popular_sports_motosports_link')
